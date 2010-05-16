@@ -1,0 +1,9 @@
+{
+	"id": "com.hpalm.weboslife",
+	"version": "1.0.0",
+	"vendor": "Michael, Michael & Albert",
+	"type": "web",
+	"main": "index.html",
+	"title": "webos-life",
+	"icon": "icon.png"
+}
