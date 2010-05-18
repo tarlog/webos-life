@@ -1,5 +1,7 @@
 [
     {"source": "app/assistants/stage-assistant.js"},
+	{"source": "app/assistants/instructions-assistant.js"},
+	{"source": "app/game.js"},
     {
         "scenes": "main",
         "source": "app/assistants/main-assistant.js"

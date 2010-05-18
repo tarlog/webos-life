@@ -14,6 +14,8 @@ MainAssistant.prototype.setup = function() {
 };
 
 MainAssistant.prototype.activate = function(event) {
+
+	Mojo.Log.info("MainAssistant.prototype.activate - started");
 	
 	game.init();
 	
@@ -23,7 +25,12 @@ MainAssistant.prototype.activate = function(event) {
 	} else if (game.screenHeight == 480) {
 		$("mainCanvas480").style.display = "block";
 		game.ctx = $("mainCanvas480").getContext("2d");
+	} else {
+		Mojo.Log.error("error!!!");
 	}
+
+	Mojo.Log.info("draw background " + game.backgroundHeight);
+	game.ctx.drawImage(game.background, game.xAdj, game.yAdj);
 	
 	Mojo.Event.listen(this.controller.document, Mojo.Event.keydown,
 			game.keyDownBind, true);
@@ -32,12 +39,12 @@ MainAssistant.prototype.activate = function(event) {
 	Mojo.Event.listen(this.controller.document, Mojo.Event.tap,
 			game.tapHandlerBind, true);
 	
-	this.controller.listen(this.controller.document, "orientationchange",
-			game.orientationChangeBind, true);
-	this.controller.listen(this.controller.document, Mojo.Event.stageActivate,
-			game.stageActivateBind, true);
-	this.controller.listen(this.controller.document,
-			Mojo.Event.stageDeactivate, game.stageDeactivateBind, true);
+//	this.controller.listen(this.controller.document, "orientationchange",
+//			game.orientationChangeBind, true);
+//	this.controller.listen(this.controller.document, Mojo.Event.stageActivate,
+//			game.stageActivateBind, true);
+//	this.controller.listen(this.controller.document,
+//			Mojo.Event.stageDeactivate, game.stageDeactivateBind, true);
 	
 	game.dialog = game.mainAssistant.controller.showDialog( {
 		template : "instructions-dialog",
