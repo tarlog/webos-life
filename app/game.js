@@ -54,9 +54,9 @@ var game = {
 	 * X/Y values to adjust all coordinates so things are drawn in the
 	 * playfield.
 	 */
-	xAdj : 11,
+	xAdj : 7,
 	yAdj : 11,
-	cellSize : 11,
+	cellSize : 30,
 
 	/**
 	 * The game background image and its height.
@@ -84,7 +84,7 @@ var game = {
 		// Use screen height to calculate dimensions for various assets.
 		this.screenHeight = Mojo.Environment.DeviceInfo.screenHeight;
 		this.backgroundHeight = this.screenHeight - 80;
-		this.backgroundWidth = Mojo.Environment.DeviceInfo.screenWidth - 22;
+		this.backgroundWidth = Mojo.Environment.DeviceInfo.screenWidth - (this.xAdj * 2);
 // this.gameConsole.frameHeight = this.screenHeight - 80;
 
 		// init data
@@ -121,7 +121,13 @@ var game = {
 	 * later it may be changed to make drawing cell-by-cell
 	 */
 	drawBackground : function() {
-		game.ctx.drawImage(game.background, game.xAdj, game.yAdj);
+//		game.ctx.drawImage(game.background, game.xAdj, game.yAdj);
+		for (x = 0; x < this.cols; ++x) {
+			for (y=0; y < this.rows; ++y) {
+				game.ctx.drawImage(this.deadCell, this.xAdj + 1 + x * this.cellSize, this.yAdj + 1 + y * this.cellSize, this.cellSize - 1 , this.cellSize - 1);
+
+			}
+		}
 	},
 	
 	clear : function() {
@@ -244,7 +250,7 @@ var game = {
 
 	drawCell : function(cell, xcell,ycell) {
 		this.ctx.drawImage(cell, 1 + this.xAdj + xcell
-				* this.cellSize, 1 + this.yAdj + ycell * this.cellSize);
+				* this.cellSize, 1 + this.yAdj + ycell * this.cellSize, this.cellSize-1, this.cellSize-1);
 	},
 
 }; /* End game object. */
