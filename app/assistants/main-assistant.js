@@ -70,6 +70,7 @@ MainAssistant.prototype.runPressed = function(event) {
 		this.btnClearModel.disabled = false;
 		this.btnStepModel.disabled = false;
 		this.btnRunModel.label = "Run";
+		game.pause();
 	}
 	this.updateButtons();
 }
