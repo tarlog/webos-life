@@ -98,9 +98,6 @@ var game = {
 			}
 		}
 		
-		// Bind mainLoop() context.
-// this.mainLoopBind = this.mainLoop.bind(this);
-
 		// Bind and tapHandler() context.
 		this.tapHandlerBind = this.tapHandler.bind(this);
 
@@ -113,6 +110,10 @@ var game = {
 
 		this.deadCell = new Image();
 		this.deadCell.src = "images/dead-cell.png";
+		
+		
+		this.mainLoopBind = this.step.bind(this);
+		
 	}, /* End init(). */
 
 	/**
@@ -123,24 +124,6 @@ var game = {
 		game.ctx.drawImage(game.background, game.xAdj, game.yAdj);
 	},
 	
-	/**
-	 * Start a new game. Called any time the game is restarted.
-	 */
-	startNewGame : function() {
-
-		this.ctx.fillStyle = "rgb(255,255,255)";
-		this.ctx.font = "normal normal bold 12pt arial";
-
-
-		// Draw the hands.
-		// this.drawHands();
-
-		// Start the main game loop.
-		// this.gameInProgress = true;
-		// this.mainLoopInterval = setInterval(this.mainLoopBind, 33);
-
-	}, /* End startNewGame(). */
-
 	clear : function() {
 		this.drawBackground();
 		this.liveCellCounter = 0;
@@ -195,9 +178,13 @@ var game = {
 	},
 	
 	run : function() {
+		this.gameInProgress = true;
+	    this.mainLoopInterval = setInterval(this.mainLoopBind, 500);
 	},
 	
 	pause : function() {
+		this.gameInProgress = false;
+		clearInterval(this.mainLoopInterval);
 	},
 	
 
