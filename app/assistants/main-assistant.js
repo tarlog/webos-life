@@ -17,13 +17,13 @@ MainAssistant.prototype.btnClearModel = {
 MainAssistant.prototype.btnStepModel = {
 	label : "Step",
 	buttonClass : "palm-button affirmative",
-	disabled : false
+	disabled : true
 };
 
 MainAssistant.prototype.btnRunModel = {
 	label : "Run",
 	buttonClass : "palm-button affirmative",
-	disabled : false
+	disabled : true
 };
 
 MainAssistant.prototype.setup = function() {
@@ -57,6 +57,7 @@ MainAssistant.prototype.clearPressed = function(event) {
 
 MainAssistant.prototype.stepPressed = function(event) {
 	Mojo.Log.info("Step pressed");
+	game.step();
 }
 
 MainAssistant.prototype.runPressed = function(event) {
