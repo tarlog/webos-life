@@ -55,13 +55,13 @@ var game = {
 	 * playfield.
 	 */
 	xAdj : 7,
-	yAdj : 11,
-	cellSize : 30,
+	yAdj : 7,
+	cellSize : 20,
 
 	/**
 	 * The game background image and its height.
 	 */
-	background : null,
+// background : null,
 	backgroundHeight : null,
 	backgroundWidth : null,
 	liveCell : null,
@@ -71,7 +71,7 @@ var game = {
 	 * Reference to the currently opened dialog, if any.
 	 */
 	dialog : null,
-
+	
 	/**
 	 * Initialize the game. This is called once at application startup.
 	 */
@@ -98,13 +98,13 @@ var game = {
 			}
 		}
 		
+		// adjust xAdj to make cells centered
+		this.xAdj = Math.floor((Mojo.Environment.DeviceInfo.screenWidth - this.cols * this.cellSize) / 2);
+		
 		// Bind and tapHandler() context.
 		this.tapHandlerBind = this.tapHandler.bind(this);
 
 		// Preload all images.
-		this.background = new Image();
-		this.background.src = "images/background-" + this.screenHeight + ".png";
-
 		this.liveCell = new Image();
 		this.liveCell.src = "images/live-cell.png";
 
@@ -121,10 +121,10 @@ var game = {
 	 * later it may be changed to make drawing cell-by-cell
 	 */
 	drawBackground : function() {
-//		game.ctx.drawImage(game.background, game.xAdj, game.yAdj);
+// game.ctx.drawImage(game.background, game.xAdj, game.yAdj);
 		for (x = 0; x < this.cols; ++x) {
 			for (y=0; y < this.rows; ++y) {
-				game.ctx.drawImage(this.deadCell, this.xAdj + 1 + x * this.cellSize, this.yAdj + 1 + y * this.cellSize, this.cellSize - 1 , this.cellSize - 1);
+				this.drawDead(x,y);
 
 			}
 		}
@@ -145,26 +145,27 @@ var game = {
 	},
 	
 	step : function() {
+		var cellsChanged = 0;
 		var newData = new Array();
 		for (x = 0;  x < this.cols; ++x) {
 			newData[x] = new Array();
 			for (y = 0; y < this.rows; ++y) {
 				var neighbours = this.getNeighbours(x,y);
 				if (this.data[x][y] == 1) { 
-					Mojo.Log.info("Live cell at x=" + x + "; y="
-							+ y + " Neighbours: " + neighbours);
-					
 					if (neighbours < 2 || neighbours > 3) {
 						newData[x][y] = 0;
 						this.drawDead(x,y);
+						this.decreaseCellCounter();
+						++cellsChanged;
 					} else {
 						newData[x][y] = 1;
 					}
-					
 				} else {
 					if (neighbours == 3) {
 						newData[x][y] = 1;
 						this.drawLive(x,y);
+						this.increaseCellCounter();
+						++cellsChanged;
 					} else {
 						newData[x][y] = 0;
 					}
@@ -172,6 +173,14 @@ var game = {
 			}
 		}
 		this.data = newData;
+		if (cellsChanged == 0 && this.gameInProgress == true && this.liveCellCounter > 0) {
+			this.gameInProgress = false;
+			clearInterval(this.mainLoopInterval);
+			this.mainAssistant.btnClearModel.disabled = false;
+			this.mainAssistant.btnStepModel.disabled = false;
+			this.mainAssistant.btnRunModel.label = "Run";
+			this.mainAssistant.updateButtons();
+		}		
 	},
 	
 	getNeighbours : function(x,y) {
@@ -201,9 +210,10 @@ var game = {
 	 *            The generated event object.
 	 */
 	tapHandler : function(inEvent) {
+		if (this.dialog != null) {
+			return;
+		}
 
-		Mojo.Log.info("tap event: x=" + inEvent.down.x + "; y="
-				+ inEvent.down.y);
 		if (inEvent.down.x > this.xAdj && inEvent.down.y > this.yAdj
 				&& inEvent.down.y < this.backgroundHeight + this.yAdj - 1
 				&& inEvent.down.x < this.backgroundWidth + this.xAdj - 1) {
@@ -214,31 +224,44 @@ var game = {
 
 			if (this.data[xcell][ycell] == 1) {
 				// cell was live, die!
-				this.liveCellCounter--;
-				if (this.liveCellCounter == 0) {
-					this.mainAssistant.btnRunModel.disabled = true;
-					this.mainAssistant.btnClearModel.disabled = true;
-					this.mainAssistant.btnStepModel.disabled = true;
-					this.mainAssistant.updateButtons();
-				}
+				this.decreaseCellCounter();
 				this.data[xcell][ycell] = 0;
 				this.drawDead(xcell, ycell);
 				
 			} else {
-				if (this.liveCellCounter == 0) {
-					this.mainAssistant.btnRunModel.disabled = false;
-					this.mainAssistant.btnClearModel.disabled = false;
-					this.mainAssistant.btnStepModel.disabled = false;
-					this.mainAssistant.updateButtons();
-				}
 				// cell was dead, live!
-				this.liveCellCounter++;
+				this.increaseCellCounter();
 				this.data[xcell][ycell] = 1;
 				this.drawLive(xcell, ycell);
 			}
 		}
 	}, /* End tapHandler(). */
 
+	decreaseCellCounter : function() {
+		this.liveCellCounter--;
+		if (this.liveCellCounter == 0) {
+			this.mainAssistant.btnRunModel.disabled = true;
+			this.mainAssistant.btnClearModel.disabled = true;
+			this.mainAssistant.btnStepModel.disabled = true;
+			if (this.gameInProgress == true) {
+				this.gameInProgress = false;
+				clearInterval(this.mainLoopInterval);
+				this.mainAssistant.btnRunModel.label = "Run";
+			}
+			this.mainAssistant.updateButtons();
+		}
+	},
+	
+	increaseCellCounter : function() {
+		if (this.liveCellCounter == 0) {
+			this.mainAssistant.btnRunModel.disabled = false;
+			this.mainAssistant.btnClearModel.disabled = false;
+			this.mainAssistant.btnStepModel.disabled = false;
+			this.mainAssistant.updateButtons();
+		}
+		this.liveCellCounter++;
+	},
+	
 	drawLive : function(x,y) {
 		this.drawCell(this.liveCell, x, y);
 
