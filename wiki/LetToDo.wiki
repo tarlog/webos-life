@@ -2,7 +2,7 @@
 
 Left to do:
 
-  # Adjust it to both 400 and 480 resolutions.
+  # ~~Adjust it to both 400 and 480 resolutions.~~
   # Create an icon.
   # Allow save state and load it from file system
   # After 3 is done, we can predefine some initial states.
@@ -12,5 +12,5 @@ Left to do:
   # Anything else?
 
 Known bugs:
-  # The game doesn’t stop after all cells are dead.
-  # The grid may be not centered. It’s visible only for some cell sizes, but it can become an issue, if cells size would be allowed to be changed.
+  # ~~The game doesn’t stop after all cells are dead.~~
+  # ~~The grid may be not centered. It’s visible only for some cell sizes, but it can become an issue, if cells size would be allowed to be changed.~~
