@@ -42,20 +42,17 @@ MainAssistant.prototype.setup = function() {
 	}
 
 	// Set up Clear button.
-	this.controller.setupWidget("main_btnClear", {},
-			this.btnClearModel);
+	this.controller.setupWidget("main_btnClear", {}, this.btnClearModel);
 	Mojo.Event.listen(this.controller.get("main_btnClear"), Mojo.Event.tap,
 			this.clearPressed.bind(this));
 
 	// Set up Step button.
-	this.controller.setupWidget("main_btnStep", {},
-			this.btnStepModel);
+	this.controller.setupWidget("main_btnStep", {}, this.btnStepModel);
 	Mojo.Event.listen(this.controller.get("main_btnStep"), Mojo.Event.tap,
 			this.stepPressed.bind(this));
 
 	// Set up Run button.
-	this.controller.setupWidget("main_btnRun", {},
-			this.btnRunModel);
+	this.controller.setupWidget("main_btnRun", {}, this.btnRunModel);
 	Mojo.Event.listen(this.controller.get("main_btnRun"), Mojo.Event.tap,
 			this.runPressed.bind(this));
 };
@@ -86,9 +83,9 @@ MainAssistant.prototype.runPressed = function(event) {
 };
 
 MainAssistant.prototype.updateButtons = function() {
-	game.mainAssistant.controller.modelChanged(this.btnRunModel);
-	game.mainAssistant.controller.modelChanged(this.btnClearModel);
-	game.mainAssistant.controller.modelChanged(this.btnStepModel);
+	this.controller.modelChanged(this.btnRunModel);
+	this.controller.modelChanged(this.btnClearModel);
+	this.controller.modelChanged(this.btnStepModel);
 };
 
 MainAssistant.prototype.activate = function(event) {
@@ -100,7 +97,9 @@ MainAssistant.prototype.activate = function(event) {
 
 	Mojo.Event.listen(this.controller.document, Mojo.Event.tap,
 			game.tapHandlerBind, true);
-
+	Mojo.Event.listen(this.controller.document, Mojo.Event.keydown,
+			game.keyDownBind, true);
+	
 	this.helpPressed();
 };
 

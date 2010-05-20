@@ -20,6 +20,11 @@ InstructionsAssistant.prototype.btnNextModel = {
 	disabled : false
 };
 
+InstructionsAssistant.prototype.btnStartModel = {
+	label : "Start",
+	buttonClass : "palm-button negative"
+};
+
 /**
  * Set up the scene.
  */
@@ -53,15 +58,16 @@ InstructionsAssistant.prototype.setup = function() {
 		}.bind(this));
 
 	// Set up Start button.
-	game.mainAssistant.controller.setupWidget("instructions_btnStart", {}, {
-		label : "Start",
-		buttonClass : "palm-button negative"
-	});
+	game.mainAssistant.controller.setupWidget("instructions_btnStart", {},
+			this.btnStartModel);
 	Mojo.Event.listen(game.mainAssistant.controller
 			.get("instructions_btnStart"), Mojo.Event.tap, function() {
 		game.dialog.mojo.close();
 		game.dialog = null;
-	}.bind(this));
+		this.btnStartModel.label = "Close"; // only first time it's called
+											// "start", next time it's called
+											// "close"
+		}.bind(this));
 
 }; // End setup().
 
