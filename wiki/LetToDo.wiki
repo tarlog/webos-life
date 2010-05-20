@@ -7,7 +7,7 @@ Left to do:
   # Allow save state and load it from file system
   # After 3 is done, we can predefine some initial states.
   # Improve design…
-  # Change cell’s size programmatically.
+  # ~~Change cell’s size programmatically.~~
   # QA
   # Anything else?
 
