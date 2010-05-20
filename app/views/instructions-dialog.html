@@ -11,31 +11,23 @@
     vertically, or diagonally adjacent.
 </div>
 <div id="instructions_divPage2" style="display:none;">
-    At each step in time, the following transitions occur:
-    <ol>
-        <li>
-            Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
-        </li>
-        <li>
-            Any live cell with more than three live neighbours dies, as if by overcrowding.
-        </li>
-        <li>
-            Any live cell with two or three live neighbours lives on to the next generation.
-        </li>
-        <li>
-            Any dead cell with exactly three live neighbours becomes a live cell.
-        </li>
-    </ol>
+    At each step in time, the following transitions occur: <br/>
+           1. Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.<br/>
+           2. Any live cell with more than three live neighbours dies, as if by overcrowding.<br/>
+           3. Any live cell with two or three live neighbours lives on to the next generation.<br/>
+           4. Any dead cell with exactly three live neighbours becomes a live cell.<br/>
 </div>
 <div id="instructions_divPage3" style="display:none;">
+<br/>
     The initial pattern constitutes the seed of the system. The first generation is created 
-    by applying the above rules simultaneously to every cell in the seed—births and deaths  
+    by applying the above rules simultaneously to every cell in the seed-births and deaths  
     happen simultaneously, and the discrete moment at which this happens is sometimes called 
     a tick (in other words, each generation is a pure function of the one before). 
     The rules continue to be applied repeatedly to create further generations.
 </div>
 <div id="instructions_divPage4" style="display:none;">
     Click <b>Start</b> whenever you are ready.<br/>
+	Click <b>Step</b> to perform a single generation step.<br/>
 	Click <b>Run</b> whenever you want the generation to run.<br/>
 	Click <b>Pause</b> whenever you want the generation to stop.<br/>
 	Click <b>Clear</b> to clear the live cells.

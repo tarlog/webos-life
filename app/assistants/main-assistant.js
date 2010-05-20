@@ -30,35 +30,45 @@ MainAssistant.prototype.setup = function() {
 	this.controller.enableFullScreenMode(true);
 	game.mainAssistant = this;
 
+	var screenHeight = Mojo.Environment.DeviceInfo.screenHeight;
+	if (screenHeight == 400) {
+		$("mainButtonsRow").style.top = "330px";
+		$("mainCanvas400").style.display = "inline";
+		game.ctx = $("mainCanvas400").getContext("2d");
+	} else if (screenHeight == 480) {
+		$("mainButtonsRow").style.top = "410px";
+		$("mainCanvas480").style.display = "inline";
+		game.ctx = $("mainCanvas480").getContext("2d");
+	}
+
 	// Set up Clear button.
-	game.mainAssistant.controller.setupWidget("main_btnClear", {},
+	this.controller.setupWidget("main_btnClear", {},
 			this.btnClearModel);
 	Mojo.Event.listen(this.controller.get("main_btnClear"), Mojo.Event.tap,
 			this.clearPressed.bind(this));
 
 	// Set up Step button.
-	game.mainAssistant.controller.setupWidget("main_btnStep", {},
+	this.controller.setupWidget("main_btnStep", {},
 			this.btnStepModel);
 	Mojo.Event.listen(this.controller.get("main_btnStep"), Mojo.Event.tap,
 			this.stepPressed.bind(this));
 
 	// Set up Run button.
-	game.mainAssistant.controller.setupWidget("main_btnRun", {},
+	this.controller.setupWidget("main_btnRun", {},
 			this.btnRunModel);
 	Mojo.Event.listen(this.controller.get("main_btnRun"), Mojo.Event.tap,
 			this.runPressed.bind(this));
-
 };
 
 MainAssistant.prototype.clearPressed = function(event) {
 	Mojo.Log.info("Clear pressed");
 	game.clear();
-}
+};
 
 MainAssistant.prototype.stepPressed = function(event) {
 	Mojo.Log.info("Step pressed");
 	game.step();
-}
+};
 
 MainAssistant.prototype.runPressed = function(event) {
 	if (this.btnRunModel.label == "Run") {
@@ -73,32 +83,28 @@ MainAssistant.prototype.runPressed = function(event) {
 		game.pause();
 	}
 	this.updateButtons();
-}
+};
+
 MainAssistant.prototype.updateButtons = function() {
 	game.mainAssistant.controller.modelChanged(this.btnRunModel);
 	game.mainAssistant.controller.modelChanged(this.btnClearModel);
 	game.mainAssistant.controller.modelChanged(this.btnStepModel);
-}
+};
 
 MainAssistant.prototype.activate = function(event) {
 
 	Mojo.Log.info("MainAssistant.prototype.activate - started");
 
 	game.init();
-
-	if (game.screenHeight == 400) {
-		$("mainCanvas400").style.display = "inline";
-		game.ctx = $("mainCanvas400").getContext("2d");
-	} else if (game.screenHeight == 480) {
-		$("mainCanvas480").style.display = "inline";
-		game.ctx = $("mainCanvas480").getContext("2d");
-	}
-
 	game.drawBackground();
-	
+
 	Mojo.Event.listen(this.controller.document, Mojo.Event.tap,
 			game.tapHandlerBind, true);
 
+	this.helpPressed();
+};
+
+MainAssistant.prototype.helpPressed = function() {
 	game.dialog = game.mainAssistant.controller.showDialog( {
 		template : "instructions-dialog",
 		assistant : new InstructionsAssistant(),

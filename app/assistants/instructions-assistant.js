@@ -60,7 +60,7 @@ InstructionsAssistant.prototype.setup = function() {
 	Mojo.Event.listen(game.mainAssistant.controller
 			.get("instructions_btnStart"), Mojo.Event.tap, function() {
 		game.dialog.mojo.close();
-		game.startNewGame();
+		game.dialog = null;
 	}.bind(this));
 
 }; // End setup().
