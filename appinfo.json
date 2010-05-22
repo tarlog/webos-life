@@ -4,6 +4,6 @@
 	"vendor": "Michael, Michael & Albert",
 	"type": "web",
 	"main": "index.html",
-	"title": "webos-life",
+	"title": "Game of Life",
 	"icon": "icon.png"
 }

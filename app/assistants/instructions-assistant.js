@@ -51,7 +51,7 @@ InstructionsAssistant.prototype.setup = function() {
 			game.mainAssistant.controller.get("instructions_btnNext"),
 			Mojo.Event.tap, function() {
 				// Move forward a page.
-			if (this.instructionsPage < 4) {
+			if (this.instructionsPage < 5) {
 				this.instructionsPage = this.instructionsPage + 1;
 			}
 			this.doCommonButtonWork();
@@ -64,6 +64,7 @@ InstructionsAssistant.prototype.setup = function() {
 			.get("instructions_btnStart"), Mojo.Event.tap, function() {
 		game.dialog.mojo.close();
 		game.dialog = null;
+		this.btnStartModel.buttonClass = "palm-button dismiss"; 
 		this.btnStartModel.label = "Close"; // only first time it's called
 											// "start", next time it's called
 											// "close"
@@ -93,7 +94,7 @@ InstructionsAssistant.prototype.doCommonButtonWork = function() {
 	}
 
 	// Disable Next if necessary.
-	if (this.instructionsPage == 4) {
+	if (this.instructionsPage == 5) {
 		this.btnNextModel.disabled = true;
 	}
 
@@ -106,6 +107,7 @@ InstructionsAssistant.prototype.doCommonButtonWork = function() {
 	$("instructions_divPage2").style.display = "none";
 	$("instructions_divPage3").style.display = "none";
 	$("instructions_divPage4").style.display = "none";
+	$("instructions_divPage5").style.display = "none";
 	$("instructions_divPage" + this.instructionsPage).style.display = "";
 
 };

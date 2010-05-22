@@ -8,7 +8,7 @@ InputCellAssistant.prototype.btnOKModel = {
 };
 InputCellAssistant.prototype.btnCanceltModel = {
 	label : "Cancel",
-	buttonClass : "palm-button affirmative",
+	buttonClass : "palm-button dismiss",
 	disabled : false
 };
 InputCellAssistant.prototype.cellSizeAttr = {
@@ -20,7 +20,7 @@ InputCellAssistant.prototype.cellSizeModel = {
 };
 
 InputCellAssistant.prototype.setup = function() {
-
+	
 	this.cellSizeModel.value = game.cellSize;
 	game.mainAssistant.controller.setupWidget("inCellSize_picker",
 			this.cellSizeAttr, this.cellSizeModel);
@@ -36,11 +36,16 @@ InputCellAssistant.prototype.setup = function() {
 			game.cellSize = this.cellSizeModel.value;
 			game.dialog.mojo.close();
 			game.recalculate();
+			game.resetData(false);
 			game.drawBackground();
+			game.liveCellCounter = 0;
+			game.mainAssistant.btnRunModel.disabled = true;
+			game.mainAssistant.btnClearModel.disabled = true;
+			game.mainAssistant.btnStepModel.disabled = true;
+			game.mainAssistant.updateButtons();
 			game.dialog = null;
 		}.bind(this));
 
-	// Set up Next button.
 	game.mainAssistant.controller.setupWidget("inCellSize_btnCancel", {},
 			this.btnCanceltModel);
 	Mojo.Event.listen(
@@ -55,3 +60,4 @@ InputCellAssistant.prototype.setup = function() {
 InputCellAssistant.prototype.activate = function() {
 
 };
+
