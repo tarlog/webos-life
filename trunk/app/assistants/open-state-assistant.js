@@ -75,6 +75,11 @@ var openState = {
 	pressOK : function() {
 		game.depot.get(game.openSateAssistant.listModel.value + ".cellSize", openState.setCellSize, game.depotFailed);
 		game.depot.get(game.openSateAssistant.listModel.value + ".data", openState.setData, game.depotFailed);
+		game.depot.get(game.openSateAssistant.listModel.value + ".liveCellCounter", openState.setLiveCellCounter, game.depotFailed);
+		game.mainAssistant.btnRunModel.disabled = false;
+		game.mainAssistant.btnClearModel.disabled = false;
+		game.mainAssistant.btnStepModel.disabled = false;
+		game.mainAssistant.updateButtons();
 	},
 	
 	setCellSize : function(val) {
@@ -83,8 +88,16 @@ var openState = {
 		} else {
 			Mojo.Log.error("setCellSize failed!")
 		}
-		Mojo.Log.info("Cell Size: " + val);
 	},
+
+	setLiveCellCounter : function(val) {
+		if (val != null) {
+			game.liveCellCounter = val;
+		} else {
+			Mojo.Log.error("setLiveCellCounter failed!")
+		}
+	},
+
 	
 	setData : function(val) {
 		if (val != null) {
