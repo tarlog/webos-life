@@ -2,6 +2,8 @@
     {"source": "app/assistants/stage-assistant.js"},
 	{"source": "app/assistants/instructions-assistant.js"},
 	{"source": "app/assistants/input-cell-size-assistant.js"},
+	{"source": "app/assistants/save-state-assistant.js"},
+	{"source": "app/assistants/open-state-assistant.js"},
 	{"source": "app/game.js"},
     {
         "scenes": "main",

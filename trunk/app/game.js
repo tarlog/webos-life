@@ -24,6 +24,8 @@ var game = {
 	 */
 	screenHeight : null,
 
+	depot : null,
+
 	/**
 	 * This is a reference to the main game loop bound to the context of the
 	 * game object. This is necessary to provide the proper execution context
@@ -72,6 +74,9 @@ var game = {
 	 * Reference to the currently opened dialog, if any.
 	 */
 	dialog : null,
+	adminMode : false,
+	saveSateAssistant : null,
+	openSateAssistant : null,
 
 	/**
 	 * Initialize the game. This is called once at application startup.
@@ -79,6 +84,16 @@ var game = {
 	init : function() {
 
 		Mojo.Log.info("game.init - started");
+
+		this.depot = new Mojo.Depot( {
+			name : "com.hpalm.weboslife.1.0.0",
+			replace : false
+		}, this.depotCreated, this.depotFailed);
+		this.depot.get("firstTime", this.firstTimeRun, this.depotFailed);
+
+		this.saveSateAssistant = new SaveSateAssistant();
+		this.openSateAssistant = new OpenSateAssistant();
+
 		// Use screen height to calculate dimensions for various assets.
 		this.screenHeight = Mojo.Environment.DeviceInfo.screenHeight;
 		this.backgroundHeight = this.screenHeight - 80;
@@ -88,6 +103,7 @@ var game = {
 
 		// init data
 		this.recalculate();
+		this.resetData(false);
 		
 		// Bind events
 		this.tapHandlerBind = this.tapHandler.bind(this);
@@ -104,6 +120,21 @@ var game = {
 
 	}, /* End init(). */
 
+	firstTimeRun : function(result) {
+		if (result == null) {
+			Mojo.Log.info("Depot: First time run");
+			game.depot.add("firstTime", "firstTime", this.depotCreated,
+					this.depotFailed);
+		}
+	},
+
+	depotCreated : function() {
+	},
+
+	depotFailed : function(code) {
+		Mojo.Log.error("depot failed:" + code);
+	},
+
 	/**
 	 * 
 	 */
@@ -111,19 +142,24 @@ var game = {
 		this.data = new Array();
 		this.cols = Math.floor(this.backgroundWidth / this.cellSize);
 		this.rows = Math.floor(this.backgroundHeight / this.cellSize);
+		// adjust xAdj to make cells centered
+		this.xAdj = Math
+				.floor((Mojo.Environment.DeviceInfo.screenWidth - this.cols
+						* this.cellSize) / 2);
+		Mojo.Log.info("cols: " + this.cols);
+		Mojo.Log.info("rows: " + this.rows);
+		Mojo.Log.info("xAdj: " + this.xAdj);
+	},
+	
+	resetData : function() {
 		for (x = 0; x < this.cols; ++x) {
 			this.data[x] = new Array();
 			for (y = 0; y < this.rows; ++y) {
 				this.data[x][y] = 0;
 			}
 		}
-
-		// adjust xAdj to make cells centered
-		this.xAdj = Math
-				.floor((Mojo.Environment.DeviceInfo.screenWidth - this.cols
-						* this.cellSize) / 2);
 	},
-	
+
 	/**
 	 * draws the background. Currently it draws the images of background, but
 	 * later it may be changed to make drawing cell-by-cell
@@ -140,12 +176,12 @@ var game = {
 
 	clear : function() {
 		this.drawBackground();
-		this.liveCellCounter = 0;
 		for (x = 0; x < this.cols; ++x) {
 			for (y = 0; y < this.rows; ++y) {
 				this.data[x][y] = 0;
 			}
 		}
+		this.liveCellCounter = 0;
 		this.mainAssistant.btnRunModel.disabled = true;
 		this.mainAssistant.btnClearModel.disabled = true;
 		this.mainAssistant.btnStepModel.disabled = true;
@@ -290,26 +326,85 @@ var game = {
 
 	keyDown : function(inEvent) {
 		if (!this.gameInProgress && this.dialog == null) {
-			Mojo.Log.info("pressed: " + event.originalEvent.keyCode + " "
-					+ event.originalEvent.ctrlKey);
-			switch (inEvent.originalEvent.ctrlKey) {
-			case true:
-				switch (inEvent.originalEvent.keyCode) {
-				case Mojo.Char.h:
-				case Mojo.Char.h + 32:
-					this.mainAssistant.helpPressed();
-					break;
-
-				case Mojo.Char.a:
-					game.dialog = game.mainAssistant.controller.showDialog( {
-						template : "input-cell-size-dialog",
-						assistant : new InputCellAssistant(),
-						preventCancel : true
-					});
-					break;
-				}
+				switch (inEvent.originalEvent.ctrlKey) {
+				case true:
+					switch (inEvent.originalEvent.keyCode) {
+					case Mojo.Char.h: // help
+						this.mainAssistant.helpPressed();
+						break;
+				
+					case Mojo.Char.a: // adjust cell's size
+						game.dialog = game.mainAssistant.controller.showDialog( {
+							template : "input-cell-size-dialog",
+							assistant : new InputCellAssistant(),
+							preventCancel : true
+						});
+						break;
+					case Mojo.Char.s: // save current state
+						if (this.liveCellCounter > 0) {
+							this.openSaveStateDialog();
+						}
+						break;
+					case Mojo.Char.o: // open saved states
+							this.openOpenStateDialog();
+						break;
+					case Mojo.Char.r:
+						if (game.adminMode) {
+						// reset depot
+						game.dialog = game.mainAssistant.controller.showAlertDialog( {
+							onChoose : function(value) {
+								if (value == "reset") {
+									game.depot.removeAll(game.depotCreated, game.depotFailed);
+								}
+								game.dialog = null;
+							},
+							title : $L("Reset Depot"),
+							message : $L("Do you really want to reset depot?"),
+							choices : [ {
+								label : $L('No'),
+								value : "no",
+								type : 'affirmative'
+							}, {
+								label : $L("Reset!!!"),
+								value : "reset",
+								type : 'negative'
+							}, {
+								label : $L("Nevermind"),
+								value : "cancel",
+								type : 'dismiss'
+							} ]
+						});
+						}
+						break;
+					case Mojo.Char.q:
+						if (game.adminMode == true) {
+							Mojo.Log.info("Admin mode off");
+							game.adminMode = false;
+						} else {
+							Mojo.Log.info("Admin mode on");
+							game.adminMode = true;
+						}
+						break;
+					}
 			}
 		}
-	}
+	},
+
+openSaveStateDialog : function() {
+	game.dialog = game.mainAssistant.controller.showDialog( {
+	template : "save-state-dialog",
+	assistant : this.saveSateAssistant,
+	preventCancel : true
+	});
+},
+	
+openOpenStateDialog : function() {
+	Mojo.Log.info("openOpenStateDialog");
+	game.dialog = game.mainAssistant.controller.showDialog( {
+		template : "open-state-dialog",
+		assistant : this.openSateAssistant,
+		preventCancel : true
+	});
+}
 
 }; /* End game object. */
