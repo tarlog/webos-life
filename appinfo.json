@@ -1,6 +1,6 @@
 {
-	"id": "com.hpalm.weboslife",
-	"version": "1.0.0.free.beta",
+	"id": "com.hpalm.weboslife.free.beta",
+	"version": "1.0.0",
 	"vendor": "Michael, Michael & Albert",
 	"type": "web",
 	"main": "index.html",
