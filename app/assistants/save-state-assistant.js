@@ -82,8 +82,8 @@ var saveState = {
 			game.depot.add("list", saveState.listArray, game.depotCreated, game.depotFailed);
 		}
 		game.depot.add(game.saveSateAssistant.saveStateModel.value + ".cellSize", game.cellSize);
-		Mojo.Log.info(game.data);
 		game.depot.add(game.saveSateAssistant.saveStateModel.value + ".data", game.data);
+		game.depot.add(game.saveSateAssistant.saveStateModel.value + ".liveCellCounter", game.liveCellCounter);
 	},
 	
 	processListAlert : function(val) {
