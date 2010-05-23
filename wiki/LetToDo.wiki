@@ -3,8 +3,8 @@
 Left to do:
 
   # ~~Adjust it to both 400 and 480 resolutions.~~
-  # Create an icon.
-  # Allow save state and load it from file system
+  # ~~Create an icon.~~
+  # ~~Allow save state and load it from file system~~
   # After 3 is done, we can predefine some initial states.
   # Improve design…
   # ~~Change cell’s size programmatically.~~
