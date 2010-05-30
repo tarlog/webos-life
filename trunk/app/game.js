@@ -3,6 +3,7 @@
  */
 var game = {
 
+		
 	/**
 	 * A reference to the main scene assistant.
 	 */
@@ -125,6 +126,18 @@ var game = {
 			Mojo.Log.info("Depot: First time run");
 			game.depot.add("firstTime", "firstTime", this.depotCreated,
 					this.depotFailed);
+			game.depot.add("list", ['Glider', 'Blinker', 'Spaceship'], game.depotCreated, game.depotFailed);
+			game.depot.add("Glider.cellSize", 20);
+			game.depot.add("Glider.data", patterns.glider);
+			game.depot.add("Glider.liveCellCounter", 5);
+
+			game.depot.add("Blinker.cellSize", 20);
+			game.depot.add("Blinker.data", patterns.blinker);
+			game.depot.add("Blinker.liveCellCounter", 3);
+
+			game.depot.add("Spaceship.cellSize", 20);
+			game.depot.add("Spaceship.data", patterns.spaceship);
+			game.depot.add("Spaceship.liveCellCounter", 12);
 		}
 	},
 
@@ -355,6 +368,7 @@ var game = {
 							onChoose : function(value) {
 								if (value == "reset") {
 									game.depot.removeAll(game.depotCreated, game.depotFailed);
+									game.firstTimeRun(null);
 								}
 								game.dialog = null;
 							},
@@ -386,7 +400,12 @@ var game = {
 						}
 						break;
 					}
-			}
+				}
+				if ( Mojo.Char.o == inEvent.originalEvent.keyCode) {
+					if (game.adminMode == true) {
+						Mojo.Log.info(Object.toJSON(this.data));
+					}
+				}
 		}
 	},
 

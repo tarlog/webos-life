@@ -36,7 +36,7 @@ InputCellAssistant.prototype.setup = function() {
 			game.cellSize = this.cellSizeModel.value;
 			game.dialog.mojo.close();
 			game.recalculate();
-			game.resetData(false);
+			game.resetData();
 			game.drawBackground();
 			game.liveCellCounter = 0;
 			game.mainAssistant.btnRunModel.disabled = true;

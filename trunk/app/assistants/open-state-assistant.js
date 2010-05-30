@@ -102,8 +102,10 @@ var openState = {
 	setData : function(val) {
 		if (val != null) {
 			game.data = val;
-			
 			openState.closeDialog();
+			game.ctx.fillStyle = "rgb(0,0,0)";
+			game.ctx.fillRect(game.xAdj, game.yAdj, game.backgroundWidth,
+					game.backgroundHeight);
 			game.recalculate();
 			game.drawBackground();
 			var counter = 0;
