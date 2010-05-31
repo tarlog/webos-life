@@ -126,21 +126,11 @@ var game = {
 			Mojo.Log.info("Depot: First time run");
 			game.depot.add("firstTime", "firstTime", this.depotCreated,
 					this.depotFailed);
-			game.depot.add("list", ['Glider', 'Blinker', 'Spaceship'], game.depotCreated, game.depotFailed);
-			game.depot.add("Glider.cellSize", 20);
-			game.depot.add("Glider.data", patterns.glider);
-			game.depot.add("Glider.liveCellCounter", 5);
-
-			game.depot.add("Blinker.cellSize", 20);
-			game.depot.add("Blinker.data", patterns.blinker);
-			game.depot.add("Blinker.liveCellCounter", 3);
-
-			game.depot.add("Spaceship.cellSize", 20);
-			game.depot.add("Spaceship.data", patterns.spaceship);
-			game.depot.add("Spaceship.liveCellCounter", 12);
+			
+			patterns.save();
 		}
 	},
-
+	
 	depotCreated : function() {
 	},
 
@@ -159,9 +149,9 @@ var game = {
 		this.xAdj = Math
 				.floor((Mojo.Environment.DeviceInfo.screenWidth - this.cols
 						* this.cellSize) / 2);
-		Mojo.Log.info("cols: " + this.cols);
-		Mojo.Log.info("rows: " + this.rows);
-		Mojo.Log.info("xAdj: " + this.xAdj);
+//		Mojo.Log.info("cols: " + this.cols);
+//		Mojo.Log.info("rows: " + this.rows);
+//		Mojo.Log.info("xAdj: " + this.xAdj);
 	},
 	
 	resetData : function() {
