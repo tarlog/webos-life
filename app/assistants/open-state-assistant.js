@@ -115,7 +115,6 @@ var openState = {
 				for (y = 0; y < game.rows; ++y) {
 					game.data[x][y] = val[x][y]; 
 					if (val[x][y] == 1) {
-						Mojo.Log.info(val[x][y] + " x=" + x + " y=" +y);
 						game.drawLive(x, y);
 					} else {
 						game.drawDead(x, y);
