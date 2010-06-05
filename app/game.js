@@ -84,13 +84,13 @@ var game = {
 	 */
 	init : function() {
 
-		Mojo.Log.info("game.init - started");
+		Mojo.Log.info("Version: " + Mojo.Controller.appInfo.version);
 
 		this.depot = new Mojo.Depot( {
 			name : "com.hpalm.weboslife.1.0.0",
 			replace : false
 		}, this.depotCreated, this.depotFailed);
-		this.depot.get("firstTime", this.firstTimeRun, this.depotFailed);
+		this.depot.get("version", this.firstTimeRun, this.depotFailed);
 
 		this.saveSateAssistant = new SaveSateAssistant();
 		this.openSateAssistant = new OpenSateAssistant();
@@ -109,7 +109,7 @@ var game = {
 		// Bind events
 		this.tapHandlerBind = this.tapHandler.bind(this);
 		this.keyDownBind = this.keyDown.bind(this);
-
+		
 		// Preload all images.
 		this.liveCell = new Image();
 		this.liveCell.src = "images/live-cell.png";
@@ -122,12 +122,20 @@ var game = {
 	}, /* End init(). */
 
 	firstTimeRun : function(result) {
+		var currentVersion = Mojo.Controller.appInfo.version;
 		if (result == null) {
-			Mojo.Log.info("Depot: First time run");
-			game.depot.add("firstTime", "firstTime", this.depotCreated,
+			// it's first time, when running 1.0.3+
+			Mojo.Log.info("Depot: First time run of " + currentVersion);
+			game.depot.add("version", currentVersion, this.depotCreated,
 					this.depotFailed);
-			
 			patterns.save();
+		} else {
+			if (result != currentVersion) {
+				Mojo.Log.info("Depot: Replacing " + result + " with " + currentVersion);
+				game.depot.add("version", currentVersion, this.depotCreated,
+						this.depotFailed);
+				patterns.save();
+			}
 		}
 	},
 	
@@ -253,6 +261,7 @@ var game = {
 		clearInterval(this.mainLoopInterval);
 	},
 
+	
 	/**
 	 * Handle screen tap events.
 	 * 

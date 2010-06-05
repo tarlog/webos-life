@@ -99,7 +99,9 @@ MainAssistant.prototype.activate = function(event) {
 			game.tapHandlerBind, true);
 	Mojo.Event.listen(this.controller.document, Mojo.Event.keydown,
 			game.keyDownBind, true);
-	
+//	Mojo.Event.listen(this.controller.document, Mojo.Event.dragStart,
+//		game.flickBind, true);
+		
 	this.helpPressed();
 };
 
