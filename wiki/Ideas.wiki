@@ -1,0 +1,5 @@
+#summary Ideas for the next versions
+
+  # Change speed by pressing + and - during the "Run".
+  # Support dragging.
+  # Ability to delete saved states.
