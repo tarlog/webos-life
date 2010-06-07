@@ -11,6 +11,11 @@ OpenSateAssistant.prototype.btnCancelModel = {
 	buttonClass : "palm-button dismiss",
 	disabled : false
 };
+OpenSateAssistant.prototype.btnDeleteModel = {
+		label : "Delete",
+		buttonClass : "palm-button negative",
+		disabled : false
+	};
 
 OpenSateAssistant.prototype.listModel = {
 		disabled: false,
@@ -18,11 +23,18 @@ OpenSateAssistant.prototype.listModel = {
 };
 
 OpenSateAssistant.prototype.setup = function() {
-	
+
 	openState.init();
 	
 	game.mainAssistant.controller.setupWidget("openState_list",
 			{}, this.listModel);
+	
+	game.mainAssistant.controller.setupWidget("openState_btnDelete", {},
+			this.btnDeleteModel);
+	Mojo.Event.listen(game.mainAssistant.controller.get("openState_btnDelete"),
+			Mojo.Event.tap, function() {
+		openState.pressDelete();
+	}.bind(this));
 	
 	game.mainAssistant.controller.setupWidget("openState_btnOK", {},
 			this.btnOKModel);
@@ -60,7 +72,7 @@ var openState = {
 			}
 			game.openSateAssistant.listModel.choices = choices;
 			game.openSateAssistant.listModel.disabled = false;
-			if (game.openSateAssistant.listModel.value == null) {
+			if (game.openSateAssistant.listModel.value == null || choices.indexOf(game.openSateAssistant.listModel.value) == -1) {
 				game.openSateAssistant.listModel.value = value[0];
 			}
 			game.mainAssistant.controller.modelChanged(game.openSateAssistant.listModel);
@@ -70,6 +82,49 @@ var openState = {
 	closeDialog : function() {
 		game.dialog.mojo.close();
 		game.dialog = null;
+	},
+	
+	pressDelete : function() {
+		var todelete = game.openSateAssistant.listModel.value;
+		openState.closeDialog();
+		game.dialog = game.mainAssistant.controller.showAlertDialog( {
+			onChoose : function(value) {
+				if (value == "delete") {
+					game.depot.discard(game.openSateAssistant.listModel.value + ".cellSize", game.depotCreated, game.depotFailed);
+					game.depot.discard(game.openSateAssistant.listModel.value + ".data",  game.depotCreated, game.depotFailed);
+					game.depot.discard(game.openSateAssistant.listModel.value + ".liveCellCounter",  game.depotCreated, game.depotFailed);
+					game.depot.get("list", openState.processDelete, game.depotFailed);
+				} else {
+					game.openOpenStateDialog();
+				}
+			},
+			message : $L("Are you sure you want to delete '" + todelete +
+					"'?"),
+			choices : [ {
+				label : $L('No'),
+				value : "no",
+				type : 'affirmative'
+			}, {
+				label : $L("Delete!"),
+				value : "delete",
+				type : 'negative'
+			}, {
+				label : $L("Nevermind"),
+				value : "cancel",
+				type : 'dismiss'
+			} ]
+		});
+	},
+
+	processDelete : function(list) {
+		var newList = new Array();
+		for (index = 0; index < list.length; ++index) {
+			if (list[index] != game.openSateAssistant.listModel.value) {
+				newList.push(list[index]);
+			}
+		}
+		game.depot.add("list", newList, game.depotCreated, game.depotFailed);
+		game.openOpenStateDialog();
 	},
 	
 	pressOK : function() {
@@ -86,7 +141,7 @@ var openState = {
 		if (val != null) {
 			game.cellSize = val;
 		} else {
-			Mojo.Log.error("setCellSize failed!")
+			Mojo.Log.error("cellSize null")
 		}
 	},
 
@@ -94,7 +149,7 @@ var openState = {
 		if (val != null) {
 			game.liveCellCounter = val;
 		} else {
-			Mojo.Log.error("setLiveCellCounter failed!")
+			Mojo.Log.error("liveCellCounter null!")
 		}
 	},
 
@@ -123,7 +178,7 @@ var openState = {
 				}
 			}
 		} else {
-			Mojo.Log.error("setData failed!")
+			Mojo.Log.error("data null!")
 		}
 	},
 	
