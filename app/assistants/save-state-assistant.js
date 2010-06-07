@@ -4,7 +4,7 @@ function SaveSateAssistant() {
 SaveSateAssistant.prototype.btnOKModel = {
 	label : "OK",
 	buttonClass : "palm-button affirmative",
-	disabled : false
+	disabled : true
 };
 SaveSateAssistant.prototype.btnCancelModel = {
 	label : "Cancel",
@@ -13,8 +13,7 @@ SaveSateAssistant.prototype.btnCancelModel = {
 };
 
 SaveSateAssistant.prototype.attr = {
-		textFieldName: 'username',
-		hintText: 'Enter Your Username',
+		changeOnKeyPress : true,
 };
 
 SaveSateAssistant.prototype.saveStateModel = {
@@ -25,7 +24,16 @@ SaveSateAssistant.prototype.setup = function() {
 	
 	game.mainAssistant.controller.setupWidget("saveState_name",
 			this.attr, this.saveStateModel);
-
+	Mojo.Event.listen(game.mainAssistant.controller.get("saveState_name"), 
+			Mojo.Event.propertyChange, function(value) {
+		if (value.value.trim() != "") {
+			this.btnOKModel.disabled = false;
+		} else {
+			this.btnOKModel.disabled = true;
+		}
+		game.mainAssistant.controller.modelChanged(this.btnOKModel);
+	}.bind(this));
+	
 	game.mainAssistant.controller.setupWidget("saveState_btnOK", {},
 			this.btnOKModel);
 	Mojo.Event.listen(game.mainAssistant.controller.get("saveState_btnOK"),
@@ -52,18 +60,19 @@ var saveState = {
 		
 	processList : function(val) {
 		saveState.listArray = val;
-		Mojo.Log.info("val: " + val + " modelValue: " + game.saveSateAssistant.saveStateModel.value);
+		var stateName = game.saveSateAssistant.saveStateModel.value.trim();
+		Mojo.Log.info("val: " + val + " name: " + stateName);
 		if (saveState.listArray == null) {
 			saveState.listArray = new Array();
 		}
 		// check that element with the same key doesn't exist yet
 		for (x in saveState.listArray) {
-			if (saveState.listArray[x] == game.saveSateAssistant.saveStateModel.value) {
+			if (saveState.listArray[x] == stateName) {
 					saveState.closeDialog();
 					game.dialog = game.mainAssistant.controller.showAlertDialog({
 					onChoose: saveState.processListAlert,
 				    title: $L("State Already Exists"),
-				    message: $L("The state with name '" + game.saveSateAssistant.saveStateModel.value + "' already exists."),
+				    message: $L("The state with name '" + stateName + "' already exists."),
 				    choices:[
 				         {label:$L("Cancel"), value:"cancel", type:'affirmative'},  
 				         {label:$L("Overwrite"), value:"overwrite", type:'negative'},    
@@ -77,17 +86,17 @@ var saveState = {
 	},
 
 	save : function(overwrite) {
+		var stateName = game.saveSateAssistant.saveStateModel.value.trim();
 		if (!overwrite) {
-			saveState.listArray.push(game.saveSateAssistant.saveStateModel.value);
+			saveState.listArray.push(stateName);
 			game.depot.add("list", saveState.listArray, game.depotCreated, game.depotFailed);
 		}
-		game.depot.add(game.saveSateAssistant.saveStateModel.value + ".cellSize", game.cellSize);
-		game.depot.add(game.saveSateAssistant.saveStateModel.value + ".data", game.data);
-		game.depot.add(game.saveSateAssistant.saveStateModel.value + ".liveCellCounter", game.liveCellCounter);
+		game.depot.add(stateName + ".cellSize", game.cellSize);
+		game.depot.add(stateName + ".data", game.data);
+		game.depot.add(stateName + ".liveCellCounter", game.liveCellCounter);
 	},
 	
 	processListAlert : function(val) {
-		Mojo.Log.info("processListAlert: " + val)
 		if (val == "cancel") {
 			game.dialog.mojo.close();
 			game.openSaveStateDialog();

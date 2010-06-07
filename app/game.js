@@ -78,6 +78,8 @@ var game = {
 	adminMode : false,
 	saveSateAssistant : null,
 	openSateAssistant : null,
+	
+	speed : 500,
 
 	/**
 	 * Initialize the game. This is called once at application startup.
@@ -157,9 +159,6 @@ var game = {
 		this.xAdj = Math
 				.floor((Mojo.Environment.DeviceInfo.screenWidth - this.cols
 						* this.cellSize) / 2);
-//		Mojo.Log.info("cols: " + this.cols);
-//		Mojo.Log.info("rows: " + this.rows);
-//		Mojo.Log.info("xAdj: " + this.xAdj);
 	},
 	
 	resetData : function() {
@@ -253,7 +252,7 @@ var game = {
 
 	run : function() {
 		this.gameInProgress = true;
-		this.mainLoopInterval = setInterval(this.mainLoopBind, 500);
+		this.mainLoopInterval = setInterval(this.mainLoopBind, speed);
 	},
 
 	pause : function() {
@@ -363,30 +362,30 @@ var game = {
 					case Mojo.Char.r:
 						if (game.adminMode) {
 						// reset depot
-						game.dialog = game.mainAssistant.controller.showAlertDialog( {
-							onChoose : function(value) {
-								if (value == "reset") {
-									game.depot.removeAll(game.depotCreated, game.depotFailed);
-									game.firstTimeRun(null);
-								}
-								game.dialog = null;
-							},
-							title : $L("Reset Depot"),
-							message : $L("Do you really want to reset depot?"),
-							choices : [ {
-								label : $L('No'),
-								value : "no",
-								type : 'affirmative'
-							}, {
-								label : $L("Reset!!!"),
-								value : "reset",
-								type : 'negative'
-							}, {
-								label : $L("Nevermind"),
-								value : "cancel",
-								type : 'dismiss'
-							} ]
-						});
+							game.dialog = game.mainAssistant.controller.showAlertDialog( {
+								onChoose : function(value) {
+									if (value == "reset") {
+										game.depot.removeAll(game.depotCreated, game.depotFailed);
+										game.firstTimeRun(null);
+									}
+									game.dialog = null;
+								},
+								title : $L("Reset Depot"),
+								message : $L("Do you really want to reset depot?"),
+								choices : [ {
+									label : $L('No'),
+									value : "no",
+									type : 'affirmative'
+								}, {
+									label : $L("Reset!!!"),
+									value : "reset",
+									type : 'negative'
+								}, {
+									label : $L("Nevermind"),
+									value : "cancel",
+									type : 'dismiss'
+								} ]
+							});
 						}
 						break;
 					case Mojo.Char.q:
