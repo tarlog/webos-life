@@ -93,7 +93,8 @@ var game = {
 			replace : false
 		}, this.depotCreated, this.depotFailed);
 		this.depot.get("version", this.firstTimeRun, this.depotFailed);
-
+		this.depot.get("speed", this.processGetSpeed, this.depotFailed);
+		
 		this.saveSateAssistant = new SaveSateAssistant();
 		this.openSateAssistant = new OpenSateAssistant();
 
@@ -123,6 +124,12 @@ var game = {
 
 	}, /* End init(). */
 
+	processGetSpeed : function(result) {
+		if (result != null) {
+			game.speed = result;
+		}
+	},
+	
 	firstTimeRun : function(result) {
 		var currentVersion = Mojo.Controller.appInfo.version;
 		if (result == null) {
@@ -252,7 +259,8 @@ var game = {
 
 	run : function() {
 		this.gameInProgress = true;
-		this.mainLoopInterval = setInterval(this.mainLoopBind, speed);
+		Mojo.Log.info("Running. Speed: " + this.speed);
+		this.mainLoopInterval = setInterval(this.mainLoopBind, this.speed);
 	},
 
 	pause : function() {
@@ -336,9 +344,16 @@ var game = {
 	},
 
 	keyDown : function(inEvent) {
-		if (!this.gameInProgress && this.dialog == null) {
-				switch (inEvent.originalEvent.ctrlKey) {
-				case true:
+		if (this.gameInProgress) {
+			if (inEvent.originalEvent.keyCode > Mojo.Char.zero && inEvent.originalEvent.keyCode <= Mojo.Char.nine) {
+				this.pause();
+				this.speed = (Mojo.Char.zero - inEvent.originalEvent.keyCode + 10) * 100;
+				this.depot.add("speed", this.speed, this.depotCreated(), this.depotFailed);
+				this.run();
+			}
+		}
+		else if (this.dialog == null) {
+				if (inEvent.originalEvent.ctrlKey == true) {
 					switch (inEvent.originalEvent.keyCode) {
 					case Mojo.Char.h: // help
 						this.mainAssistant.helpPressed();
@@ -397,11 +412,6 @@ var game = {
 							game.adminMode = true;
 						}
 						break;
-					}
-				}
-				if ( Mojo.Char.o == inEvent.originalEvent.keyCode) {
-					if (game.adminMode == true) {
-						Mojo.Log.info(Object.toJSON(this.data));
 					}
 				}
 		}

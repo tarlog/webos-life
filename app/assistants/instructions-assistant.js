@@ -31,7 +31,9 @@ InstructionsAssistant.prototype.btnStartModel = {
 InstructionsAssistant.prototype.setup = function() {
 
 	this.instructionsPage = 1;
-
+	this.btnNextModel.disabled = false;
+	this.btnPrevModel.disabled = true;
+	
 	// Set up Prev button.
 	game.mainAssistant.controller.setupWidget("instructions_btnPrevious", {},
 			this.btnPrevModel);
